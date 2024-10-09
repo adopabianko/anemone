@@ -1,4 +1,13 @@
 services:
+  gateway:
+    container_name: anemone-api-gateway
+    image: nginx:latest
+    volumes:
+      - "./gateway/nginx/sites/:/etc/nginx/conf.d"
+    ports:
+      - "80:80"
+    networks:
+      - gateway
   order-service:
     container_name: order-server
     build: 
@@ -6,6 +15,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8181:8181"
+    networks:
+      - gateway
   payment-service:
     container_name: payment-server
     build:
@@ -13,6 +24,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8282:8282"
+    networks:
+      - gateway
   product-service:
     container_name: product-server
     build:
@@ -20,6 +33,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8383:8383"
+    networks:
+      - gateway
   promo-service:
     container_name: promo-server
     build:
@@ -27,3 +42,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8484:8484"
+    networks:
+      - gateway
+
+networks:
+  gateway: {}
