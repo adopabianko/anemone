@@ -1,4 +1,22 @@
 services:
+  db-postgres:
+    container_name: anemone-postgres
+    image: postgres:17
+    volumes:
+      - ./database/postgresql/create-multiple-db.sh:/docker-entrypoint-initdb.d/create-multiple-db.sh
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: anemone_order, anemone_product, anemone_promo
+      POSTGRES_USER: anemone
+      POSTGRES_PASSWORD: anemone
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anemone"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - anemone-network
   gateway:
     container_name: anemone-api-gateway
     image: nginx:latest
@@ -7,43 +25,75 @@ services:
     ports:
       - "80:80"
     networks:
-      - gateway
+      - anemone-network
+    depends_on:
+      - order-service
+      - payment-service
+      - product-service
+      - promo-service
   order-service:
-    container_name: order-server
+    container_name: anemone-order-server
     build: 
       context: ./services/order
       dockerfile: ./Dockerfile
     ports:
       - "8181:8181"
     networks:
-      - gateway
+      - anemone-network
+    depends_on:
+      - db-postgres
   payment-service:
-    container_name: payment-server
+    container_name: anemone-payment-server
     build:
       context: ./services/payment
       dockerfile: ./Dockerfile
     ports:
       - "8282:8282"
     networks:
-      - gateway
+      - anemone-network
+    depends_on:
+      - db-postgres
   product-service:
-    container_name: product-server
+    container_name: anemone-product-server
     build:
       context: ./services/product
       dockerfile: ./Dockerfile
     ports:
       - "8383:8383"
     networks:
-      - gateway
+      - anemone-network
+    depends_on:
+      - db-postgres
   promo-service:
-    container_name: promo-server
+    container_name: anemone-promo-server
     build:
       context: ./services/promo
       dockerfile: ./Dockerfile
     ports:
       - "8484:8484"
     networks:
-      - gateway
+      - anemone-network
+    depends_on:
+      - db-postgres
+  db-migrations:
+    container_name: anemone-db-migrations
+    image: migrate/migrate
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+    volumes:
+      - ./services/order/db/migrations:/order-migrations
+      - ./services/product/db/migrations:/product-migrations
+      - ./services/promo/db/migrations:/promo-migrations
+    entrypoint: ""
+    command: >
+      sh -c "
+        migrate -path order-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_order?sslmode=disable' up &&
+        migrate -path product-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_product?sslmode=disable' up &&
+        migrate -path promo-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_promo?sslmode=disable' up
+      "
+    networks:
+      anemone-network:
 
 networks:
-  gateway: {}
+  anemone-network: {}
