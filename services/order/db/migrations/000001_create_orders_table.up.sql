@@ -1,9 +1,8 @@
-CREATE TABLE IF NOT EXISTS order_promo(
+CREATE TABLE IF NOT EXISTS "orders"(
     id SERIAL PRIMARY KEY NOT NULL,
-    order_id SERIAL NOT NULL,
-    promo_id SERIAL NOT NULL,
-    promo_code VARCHAR(50) NOT NULL,
-    promo_value NUMERIC(10,2) NOT NULL,
+    order_code VARCHAR(50) NOT NULL,
+    total NUMERIC(10,2) NOT NULL,
+    notes VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by VARCHAR(100) NOT NULL,
     deleted_at TIMESTAMP,
