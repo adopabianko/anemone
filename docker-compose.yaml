@@ -22,6 +22,7 @@ services:
     container_name: anemone-api-gateway
     image: nginx:latest
     volumes:
+      - "./gateway/nginx/www/:/var/www"
       - "./gateway/nginx/sites/:/etc/nginx/conf.d"
     ports:
       - "80:80"
