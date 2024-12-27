@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -20,6 +22,8 @@ func main() {
 			"service_version": "1.0.0",
 		})
 	})
+
+	router.GET("/health", healthCheck)
 
 	srv := &http.Server{
 		Addr:    ":8383",
@@ -54,4 +58,26 @@ func main() {
 		log.Println("timeout of 5 seconds.")
 	}
 	log.Println("Server exiting")
+}
+
+func healthCheck(c *gin.Context) {
+	postgresPing := postgresConn().Ping()
+
+	postgresStatus := "Ok"
+	if postgresPing != nil {
+		postgresStatus = "Error"
+	}
+
+	c.JSON(200, gin.H{
+		"postgres": postgresStatus,
+	})
+}
+
+func postgresConn() *sqlx.DB {
+	db, err := sqlx.Connect("postgres", "postgres://anemone:anemone@anemone-postgres:5432/anemone_product?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return db
 }

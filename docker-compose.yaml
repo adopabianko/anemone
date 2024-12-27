@@ -6,7 +6,7 @@ services:
       - ./database/postgresql/pgdata:/var/lib/postgresql
       - ./database/postgresql/create-multiple-db.sh:/docker-entrypoint-initdb.d/create-multiple-db.sh
     environment:
-      POSTGRES_MULTIPLE_DATABASES: anemone_order, anemone_product, anemone_promo
+      POSTGRES_MULTIPLE_DATABASES: anemone_order, anemone_product, anemone_promo, anemone_payment
       POSTGRES_USER: anemone
       POSTGRES_PASSWORD: anemone
     ports:
