@@ -91,11 +91,13 @@ services:
       - ./services/product/db/migrations:/product-migrations
       - ./services/promo/db/migrations:/promo-migrations
       - ./services/order/db/migrations:/order-migrations
+      - ./services/payment/db/migrations:/payment-migrations
     entrypoint: >
       sh -c "
         migrate -path product-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_product?sslmode=disable' up &&
         migrate -path promo-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_promo?sslmode=disable' up &&
         migrate -path order-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_order?sslmode=disable' up
+        migrate -path payment-migrations -database 'postgres://anemone:anemone@db-postgres:5432/anemone_payment?sslmode=disable' up
       "
     networks:
       anemone-network:
