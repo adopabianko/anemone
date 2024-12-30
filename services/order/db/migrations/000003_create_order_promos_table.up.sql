@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS order_promos(
     id SERIAL PRIMARY KEY NOT NULL,
     order_id SERIAL NOT NULL,
-    promo_id SERIAL NOT NULL,
     promo_code VARCHAR(50) NOT NULL,
     promo_value NUMERIC(10,2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
