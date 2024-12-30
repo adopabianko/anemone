@@ -34,7 +34,7 @@ services:
       - product-service
       - promo-service
   order-service:
-    container_name: anemone-order-server
+    container_name: anemone-order-service
     build: 
       context: ./services/order
       dockerfile: ./Dockerfile
@@ -46,7 +46,7 @@ services:
       db-postgres:
         condition: service_healthy
   payment-service:
-    container_name: anemone-payment-server
+    container_name: anemone-payment-service
     build:
       context: ./services/payment
       dockerfile: ./Dockerfile
@@ -58,7 +58,7 @@ services:
       db-postgres:
         condition: service_healthy
   product-service:
-    container_name: anemone-product-server
+    container_name: anemone-product-service
     build:
       context: ./services/product
       dockerfile: ./Dockerfile
@@ -70,7 +70,7 @@ services:
       db-postgres:
         condition: service_healthy
   promo-service:
-    container_name: anemone-promo-server
+    container_name: anemone-promo-service
     build:
       context: ./services/promo
       dockerfile: ./Dockerfile
